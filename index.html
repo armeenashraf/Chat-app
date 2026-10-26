@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Petalk 🌷</title>
+<style>
+:root{--p:#ff8fb8;--p2:#ffd6e7;--l:#c9b6ff;--bg:#fff5fa;--ink:#4a3350;--me:#ffd1e3;--card:#fff;--sh:0 8px 30px #ff8fb840}
+*{box-sizing:border-box;margin:0;font-family:'Nunito','Segoe UI',system-ui,sans-serif}
+body{background:linear-gradient(135deg,#ffe3f0,#e6dcff);color:var(--ink);min-height:100vh}
+button{cursor:pointer;border:0}input{outline:0}
+/* auth */
+.auth{min-height:100vh;display:grid;place-items:center;padding:16px}
+.card{background:var(--card);border-radius:28px;box-shadow:var(--sh);padding:32px;width:100%;max-width:400px;text-align:center}
+.mascot{font-size:64px;animation:b 2s infinite}@keyframes b{50%{transform:translateY(-8px)}}
+.card h1{margin:6px 0;color:#e0508a}.card p{opacity:.7;margin-bottom:18px}
+.card input{width:100%;padding:13px 16px;margin:6px 0;border:2px solid var(--p2);border-radius:16px;font-size:15px;background:#fffafd}
+.card input:focus{border-color:var(--p)}
+.btn{width:100%;padding:13px;margin-top:10px;border-radius:16px;background:linear-gradient(90deg,var(--p),var(--l));color:#fff;font-weight:800;font-size:16px}
+.link{background:none;color:#e0508a;margin-top:14px;font-weight:700}
+.err{color:#d6336c;font-size:13px;min-height:18px;margin-top:6px}
+/* app */
+.app{display:flex;height:100vh;max-width:1200px;margin:auto;background:#fff;box-shadow:var(--sh)}
+.side{width:340px;border-right:2px solid var(--p2);display:flex;flex-direction:column;background:var(--bg)}
+.top{padding:14px;display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--p2),#e6dcff)}
+.top b{flex:1;font-size:18px}.ib{background:#fff;border-radius:50%;width:36px;height:36px;font-size:17px}
+.search{margin:10px 12px;padding:10px 14px;border-radius:14px;border:2px solid var(--p2);background:#fff}
+.list{overflow:auto;flex:1}
+.ct{display:flex;gap:12px;padding:12px 14px;align-items:center;cursor:pointer}
+.ct:hover,.ct.on{background:var(--p2)}
+.av{width:46px;height:46px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:26px;box-shadow:0 2px 8px #ff8fb855;flex:none}
+.ct .m{flex:1;min-width:0}.ct .n{font-weight:800}.ct .s{font-size:13px;opacity:.65;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ct small{font-size:11px;opacity:.6}.bd{background:var(--p);color:#fff;border-radius:10px;padding:1px 7px;font-size:12px;display:block;margin-top:3px}
+.main{flex:1;display:flex;flex-direction:column;background:#fff0f7 radial-gradient(#ffd6e7 1.5px,transparent 1.5px) 0 0/22px 22px}
+.hd{padding:12px 16px;display:flex;gap:12px;align-items:center;background:#fff;border-bottom:2px solid var(--p2)}
+.hd .t{font-weight:800}.hd .st{font-size:12px;color:#9b6bd1}
+.msgs{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:6px}
+.b{max-width:70%;padding:9px 13px;border-radius:18px;background:#fff;box-shadow:0 2px 6px #0001;white-space:pre-wrap;word-break:break-word;animation:pop .2s}
+@keyframes pop{from{transform:scale(.9);opacity:0}}
+.b.me{align-self:flex-end;background:var(--me);border-bottom-right-radius:4px}.b.them{align-self:flex-start;border-bottom-left-radius:4px}
+.b i{display:block;font-size:10px;opacity:.55;text-align:right;font-style:normal;margin-top:2px}
+.bar{display:flex;gap:8px;padding:12px;background:#fff;border-top:2px solid var(--p2)}
+.bar input{flex:1;padding:12px 16px;border-radius:22px;border:2px solid var(--p2)}
+.send{width:46px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--l));color:#fff;font-size:18px}
+.empty{margin:auto;text-align:center;opacity:.7;font-size:18px}
+.modal{position:fixed;inset:0;background:#4a335080;display:none;place-items:center;z-index:9}.modal.on{display:grid}
+.pick{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:8px 0}.pick span{font-size:26px;cursor:pointer;padding:4px;border-radius:12px}.pick .sel{background:var(--p2)}
+.back{display:none}
+@media(max-width:700px){.side{width:100%}.main{display:none}.app.chat .side{display:none}.app.chat .main{display:flex}.back{display:block}}
+
+.card{max-height:92vh;overflow:auto}.av{overflow:hidden}
+.row{display:flex;align-items:center;gap:8px;margin:4px 0;text-align:left}.row>b{width:84px;font-size:12px;flex:none}
+.sw{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;box-shadow:0 0 0 1px #d9c3d3;margin:3px;cursor:pointer;font-size:12px;background:#fff}.sw.sel{box-shadow:0 0 0 3px var(--p)}
+.chip{display:inline-block;padding:5px 10px;margin:3px;border-radius:14px;background:var(--bg);border:2px solid var(--p2);cursor:pointer;font-size:13px}.chip.sel{background:var(--p2);border-color:var(--p)}
+.pfav{width:110px;height:110px;margin:0 auto 8px;border-radius:50%;overflow:hidden;box-shadow:var(--sh)}
+.irow{padding:10px;margin:6px 0;border-radius:14px;background:var(--bg);text-align:left}.irow small{display:block;opacity:.6}
+body.dark{--bg:#2a2133;--ink:#f3e8ff;--card:#3a2d47;--p2:#4d3a5e;--me:#6b3f66}
+body.dark .app,body.dark .hd,body.dark .bar,body.dark .b.them,body.dark input:not([type=checkbox]),body.dark .search,body.dark .sw,body.dark .ib{background:#3a2d47;color:#f3e8ff}
+body.dark .main{background:#2a2133}body.dark .card{background:#3a2d47}body.dark .top{background:linear-gradient(90deg,#4d3a5e,#3a2d47)}
+.main{position:relative}.app{height:100vh;height:100dvh}.msgs{overscroll-behavior:contain}
+.sys{align-self:center;background:#fff9;padding:4px 12px;border-radius:12px;font-size:12px;opacity:.85}
+.pic{display:block;max-width:100%;width:240px;border-radius:12px;margin-bottom:4px;cursor:zoom-in}
+.b strong{display:block;font-size:12px}.del{display:none;font-size:11px;color:#d6336c;cursor:pointer;margin-top:4px}.b.act .del{display:block}
+.emopanel{display:none;position:absolute;bottom:72px;left:10px;right:10px;max-width:340px;background:#fff;border-radius:18px;box-shadow:var(--sh);padding:8px;flex-wrap:wrap;gap:2px;z-index:5}.emopanel.on{display:flex}
+.emopanel span{font-size:24px;padding:4px;cursor:pointer;border-radius:10px}.emopanel span:hover{background:var(--p2)}
+@media(max-width:700px){.b{max-width:84%}.pic{width:200px}.card{padding:22px;border-radius:22px}.app{box-shadow:none}.bar{padding:8px;padding-bottom:max(8px,env(safe-area-inset-bottom))}.top{padding-top:max(14px,env(safe-area-inset-top))}}
+@media(min-width:701px) and (max-width:950px){.side{width:280px}}
+body.dark .emopanel{background:#3a2d47}
+html,body{height:100%}.app{height:100dvh}
+.tabs{display:flex;border-top:2px solid var(--p2);background:#fff}.tabs button{flex:1;padding:8px 0;background:none;font-size:20px;color:var(--ink);opacity:.55}.tabs small{display:block;font-size:11px}.tabs .on{opacity:1;color:#e0508a}
+.ring{box-shadow:0 0 0 3px var(--p)}.ring.seen{box-shadow:0 0 0 3px #ccc}.sec{padding:8px 14px;font-size:12px;opacity:.6;font-weight:800}
+.b{position:relative}.rx{position:absolute;bottom:-12px;right:8px;background:#fff;border-radius:12px;padding:0 5px;box-shadow:0 1px 4px #0003;font-size:13px;color:#333}.b:has(.rx){margin-bottom:12px}
+#rx{position:fixed;z-index:30;display:none;gap:6px;background:#fff;padding:6px 12px;border-radius:24px;box-shadow:0 4px 18px #0003}#rx span{font-size:24px;cursor:pointer}
+#call,#story{position:fixed;inset:0;z-index:20;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#fff}
+#call{background:linear-gradient(160deg,#c9b6ff,#ff8fb8)}#call.vid{background:linear-gradient(160deg,#4b3a6b,#e0508a,#6aa7ff);background-size:300% 300%;animation:gr 8s ease infinite}@keyframes gr{50%{background-position:100% 100%}}
+.cav{width:130px;height:130px;font-size:72px;border-radius:50%;background:#fff3;display:grid;place-items:center;animation:pl 1.6s infinite}@keyframes pl{50%{box-shadow:0 0 0 24px #fff2}}
+.cbtns{display:flex;gap:18px;margin-top:40px}.cbtns button{width:60px;height:60px;border-radius:50%;font-size:24px;background:#fff4;color:#fff}.cbtns .off{background:#fff;color:#333}
+#cme{position:absolute;right:16px;bottom:120px;width:90px;height:120px;border-radius:16px;overflow:hidden;border:3px solid #fff;display:none}
+#stbars{position:absolute;top:10px;left:10px;right:10px;display:flex;gap:4px}#stbars span{flex:1;height:3px;background:#fff5;border-radius:3px;overflow:hidden}#stbars b{display:block;height:100%;width:0;background:#fff}@keyframes fill{to{width:100%}}
+#sthead{position:absolute;top:24px;left:14px;display:flex;gap:10px;align-items:center;color:#fff}#sthead .av{width:38px;height:38px;font-size:20px;color:#333}
+#stx{position:absolute;top:20px;right:14px;z-index:2;background:#0004;color:#fff;border-radius:50%;width:36px;height:36px}
+#sttext{font-size:28px;font-weight:800;text-align:center;padding:30px;text-shadow:0 2px 8px #0003}#stprev,#stnext{position:absolute;top:70px;bottom:0;width:40%}#stprev{left:0}#stnext{right:0}
+body.dark .tabs{background:#3a2d47}@media(max-width:700px){.b{max-width:84%}}
+</style></head>
+<body>
+<!-- SIGN IN / SIGN UP -->
+<div class="auth" id="authView" style="display:none"><div class="card">
+<div class="mascot"><svg viewBox="0 0 64 64" width="76" height="76"><path d="M10 14Q10 6 18 6H46Q54 6 54 14V36Q54 44 46 44H30L18 57V44Q10 44 10 36Z" fill="#ff8fb8"/><g transform="translate(32 25)" fill="#fff"><ellipse cy="-9" rx="4.5" ry="7"/><ellipse cy="-9" rx="4.5" ry="7" transform="rotate(72)"/><ellipse cy="-9" rx="4.5" ry="7" transform="rotate(144)"/><ellipse cy="-9" rx="4.5" ry="7" transform="rotate(216)"/><ellipse cy="-9" rx="4.5" ry="7" transform="rotate(288)"/></g><circle cx="32" cy="25" r="4.5" fill="#ffd166"/></svg></div><h1>Petalk</h1><p id="sub">Welcome back! Sign in to chat 💕</p>
+<input id="name" placeholder="Your cute name" style="display:none">
+<input id="email" type="email" placeholder="Email"><input id="pass" type="password" placeholder="Password (6+ chars)">
+<div class="err" id="err"></div>
+<button class="btn" id="go">Sign In</button>
+<button class="link" id="tg">New here? Create account</button>
+</div></div>
+
+<!-- CHAT APP -->
+<div class="app" id="app" style="display:none">
+<div class="side"><div class="top"><div class="av" id="myav" style="width:46px;height:46px;cursor:pointer"></div><div id="mybox" style="flex:1;min-width:0;cursor:pointer"><b id="me" style="font-size:17px">Cutie</b><div class="s" id="mymood" style="font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div></div>
+<button class="ib" id="add" title="Add contact">➕</button><button class="ib" id="grp" title="New group">👥</button><button class="ib" id="out" title="Sign out">🚪</button></div>
+<input class="search" id="q" placeholder="Search chats 🔍"><div class="list" id="list"></div><div class="tabs" id="tabs"><button class="on" data-t="chats">💬<small>Chats</small></button><button data-t="status">🌈<small>Status</small></button><button data-t="calls">📞<small>Calls</small></button></div></div>
+<div class="main" id="main"></div></div>
+
+<!-- ADD CONTACT -->
+<div class="modal" id="modal"><div class="card"><h1>Add Contact 💌</h1><p>Pick an avatar</p><div class="pick" id="pick"></div>
+<input id="cn" placeholder="Name"><input id="cs" placeholder="Status (optional)"><input id="cp" type="tel" placeholder="Phone number (optional)">
+<button class="btn" id="save">Add</button><button class="link" id="cancel">Cancel</button></div></div>
+
+<!-- GROUP -->
+<div class="modal" id="gm"><div class="card"><h1>New Group 👥</h1><p style="margin-bottom:4px">Pick an icon</p><div class="pick" id="gpick"></div>
+<input id="gn" placeholder="Group name"><p style="margin:10px 0 4px;text-align:left">Add members (2+)</p><div id="gmem" style="text-align:left"></div>
+<button class="btn" id="gsave">Create Group</button><button class="link" id="gx">Cancel</button></div></div>
+<div class="modal" id="lb" onclick="this.classList.remove('on')"><img id="lbi" style="max-width:94vw;max-height:90vh;border-radius:16px"></div>
+<div class="modal" id="stm"><div class="card"><h1>New Status 🌈</h1><input id="stt" placeholder="What's on your mind?"><div class="pick" id="stc"></div><button class="btn" id="stp">Post</button><button class="link" id="stq">Cancel</button></div></div>
+<div id="rx"></div>
+<div id="call"><div id="cme"></div><div class="cav" id="cav"></div><h2 id="cname"></h2><p id="cst"></p><div class="cbtns"><button id="cmute">🎤</button><button id="cspk">🔊</button><button id="cend" style="background:#ff4d6d">📵</button></div></div>
+<div id="story"><div id="stbars"></div><div id="sthead"></div><div id="sttext"></div><div id="stprev"></div><div id="stnext"></div><button id="stx">✕</button></div>
+<!-- PROFILE -->
+<div class="modal" id="pf"><div class="card" style="max-width:460px"><h1 id="pft">My Profile 🌷</h1><div class="pfav" id="pfav"></div>
+<div><label class="btn" style="display:inline-block;width:auto;padding:8px 14px;font-size:13px">📷 Upload photo<input type="file" id="pph" accept="image/*" hidden></label>
+<button class="link" id="pphx" style="margin:0 8px">Use bitmoji</button><button class="link" id="rnd" style="margin:0">🎲 Random</button></div>
+<div id="pfopts" style="margin-top:8px"></div>
+<input id="pn" placeholder="Name"><input id="pu" placeholder="Username (e.g. petal_girl)"><input id="pb" placeholder="About">
+<div id="pfabout"></div><input id="pp" type="tel" placeholder="Phone number">
+<p style="margin:8px 0 0;font-size:12px;text-align:left">🎂 Birthday</p><input id="pbd" type="date">
+<p style="margin:10px 0 2px">My mood</p><div id="pfmood"></div><p style="margin:10px 0 2px">Theme color</p><div id="pfacc"></div>
+<label class="irow" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="pls" style="width:auto;margin:0"> Show my last seen</label>
+<label class="irow" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="prr" style="width:auto;margin:0"> Read receipts (blue ticks)</label>
+<label class="irow" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="pdk" style="width:auto;margin:0"> Dark mode 🌙</label>
+<button class="btn" id="pfsave">Save Profile</button><button class="link" id="pfx">Skip for now</button></div></div>
+<!-- CONTACT INFO -->
+<div class="modal" id="inf"><div class="card"><div id="ifbody"></div><button class="btn" id="ifx">Close</button></div></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDspCs9sX9LzJc8QJ5uMtOnofcmV82kvGI",
+  authDomain: "chatgpt-9efba.firebaseapp.com",
+  databaseURL: "https://chatgpt-9efba-default-rtdb.firebaseio.com",
+  projectId: "chatgpt-9efba",
+  storageBucket: "chatgpt-9efba.firebasestorage.app",
+  messagingSenderId: "1023461909276",
+  appId: "1:1023461909276:web:76d193a9c5fa21899c10d9",
+  measurementId: "G-YQEN7BPJ0Q"
+};
+const auth = getAuth(initializeApp(firebaseConfig));
+const $ = id => document.getElementById(id);
+
+/* ---------- AUTH ---------- */
+let signup = false;
+$("tg").onclick = () => {
+  signup = !signup;
+  $("name").style.display = signup ? "block" : "none";
+  $("go").textContent = signup ? "Sign Up" : "Sign In";
+  $("tg").textContent = signup ? "Already have an account? Sign in" : "New here? Create account";
+  $("sub").textContent = signup ? "Join the cutest chat ever 🌸" : "Welcome back! Sign in to chat 💕";
+  $("err").textContent = "";
+};
+$("go").onclick = async () => {
+  const e = $("email").value.trim(), p = $("pass").value;
+  $("err").textContent = "";
+  try {
+    if (signup) {
+      const n = $("name").value.trim();
+      if (!n) return $("err").textContent = "Please enter your name 🎀";
+      const c = await createUserWithEmailAndPassword(auth, e, p);
+      await updateProfile(c.user, { displayName: n });
+    } else await signInWithEmailAndPassword(auth, e, p);
+  } catch (x) {
+    const m = { "auth/invalid-credential": "Wrong email or password", "auth/email-already-in-use": "Email already registered",
+      "auth/weak-password": "Password needs 6+ characters", "auth/invalid-email": "Invalid email",
+      "auth/operation-not-allowed": "Enable Email/Password in Firebase Console → Authentication" };
+    $("err").textContent = m[x.code] || x.message;
+  }
+};
+
+/* ---------- CHAT ---------- */
+const EM = ["🐱","🐻","🦊","🐼","🐨","🦄","🐸","🐥","🌸","🍓"];
+const REPLIES = ["Haha yes! 😂","Omg really?? 😳","Aww that's so sweet 🥹","Tell me more!","I was just thinking about you 💕","Okayyy 👌","Lol same","No way!! 🙈","Let's meet up soon 🧋","Hehe 🌸","You're the best 💖"];
+const GREET = ["Heyyy! 💕","Hii cutie! 🎀","Hello hello 🌷"];
+let uid, S, cur = null, sel = EM[0];
+const now = () => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+const save = () => { try { localStorage.setItem("cc_" + uid, JSON.stringify(S)); } catch { alert("Storage full 🗑 — delete some photos"); } };
+const seed = () => ({ contacts: [
+  { id: "ai", name: "Petal AI ✨", em: "🤖", mood: "🤖 Always online", phone: "—", st: "Your cute assistant", ai: 1, unread: 1, msgs: [{ f: "them", t: "Hi! I'm Petal AI ✨ Ask me for a joke, the time, math (2+2), advice, or just chat!", ts: now() }] },
+  { id: "d1", name: "Mimi", em: "🐱", mood: "🥰 In love", phone: "+92 300 1112233", st: "Living my best life 🌈", msgs: [{ f: "them", t: "Heyy! Did you see the new café? 🧋", ts: now() }], unread: 1 },
+  { id: "d2", name: "Zara", em: "🦄", mood: "🤩 Excited", phone: "+92 321 4445566", st: "Busy ✨", msgs: [], unread: 0 },
+  { id: "d3", name: "Hamza", em: "🐻", mood: "💪 Focused", phone: "+92 333 7778899", st: "At the gym 💪", msgs: [{ f: "them", t: "Bro are we still on for tonight?", ts: now() }], unread: 1 }] });
+
+function ai(t) {
+  t = t.toLowerCase();
+  if (/^(hi|hello|hey)/.test(t)) return "Hello cutie! 🎀 How can I help today?";
+  if (t.includes("joke")) return ["Why did the cookie go to the doctor? It felt crumby 🍪","What do you call a sleepy bunny? A hop-less napper 🐰"][Math.random() * 2 | 0];
+  if (t.includes("time")) return "It's " + now() + " ⏰";
+  if (t.includes("date") || t.includes("day")) return "Today is " + new Date().toDateString() + " 📅";
+  if (t.includes("name")) return "I'm Petal AI, your pocket bestie 💖";
+  if (/sad|tired|bad/.test(t)) return "Aww, sending you a big hug 🤗 Drink some water and take a little break. You've got this!";
+  if (/thank/.test(t)) return "Anytime! 🌸";
+  const m = t.match(/^[\d\s+\-*/().]+$/);
+  if (m) { try { return "= " + Function('"use strict";return (' + t + ')')() + " 🧮"; } catch {} }
+  return ["Ooh interesting! Tell me more 🌸","I think you should go for it! ✨","That sounds fun 💕 What happens next?"][Math.random() * 3 | 0];
+}
+function renderList() {
+  $("q").style.display = tab === "chats" ? "" : "none";
+  if (tab === "status") return renderStatus();
+  if (tab === "calls") return renderCalls();
+  const q = $("q").value.toLowerCase();
+  $("list").innerHTML = S.contacts.filter(c => c.name.toLowerCase().includes(q)).map(c => {
+    const l = c.msgs[c.msgs.length - 1];
+    return `<div class="ct ${cur === c.id ? "on" : ""}" data-id="${c.id}"><div class="av">${c.em}</div><div class="m"><div class="n">${esc(c.name)}</div><div class="s">${l ? (l.img ? "📷 Photo" : esc(l.t)) : esc(c.st)}</div></div><div><small>${l ? l.ts : ""}</small>${c.unread ? `<span class="bd">${c.unread}</span>` : ""}</div></div>`;
+  }).join("");
+  document.querySelectorAll(".ct").forEach(e => e.onclick = () => open(e.dataset.id));
+}
+const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+function open(id) {
+  cur = id; const c = S.contacts.find(x => x.id === id); c.unread = 0; save();
+  $("app").classList.add("chat");
+  $("main").innerHTML = `<div class="hd" id="hd" style="cursor:pointer"><button class="ib back" id="bk">←</button><div class="av">${c.em}</div><div style="flex:1;min-width:0"><div class="t">${esc(c.name)}</div><div class="st" id="st">${esc(c.st)}</div></div><button class="ib" id="vc">🎥</button><button class="ib" id="ac">📞</button></div><div class="msgs" id="msgs"></div><div class="emopanel" id="emop"></div><div class="bar"><button class="ib" id="emo" type="button">😊</button><label class="ib" style="display:grid;place-items:center;cursor:pointer">📎<input type="file" id="img" accept="image/*" hidden></label><input id="inp" placeholder="Type a message 💬" autocomplete="off"><button class="send" id="snd">➤</button></div>`;
+  $("bk").onclick = () => { cur = null; $("app").classList.remove("chat"); renderList(); };
+  $("hd").onclick = e => { if (!e.target.closest("#bk,#vc,#ac")) showInfo(c); }; $("vc").onclick = () => startCall(c, 1); $("ac").onclick = () => startCall(c, 0); $("snd").onclick = () => send(); $("inp").onkeydown = e => e.key === "Enter" && send();
+  wire(); bindMsgs(); drawMsgs(); renderList(); $("inp").focus();
+}
+function drawMsgs() {
+  const c = S.contacts.find(x => x.id === cur), box = $("msgs"); if (!box) return;
+  box.innerHTML = c.msgs.map((m, i) => m.sys ? `<div class="sys">${esc(m.t)}</div>` :
+    `<div class="b ${m.f}" data-i="${i}">${c.group && m.f === "them" ? `<strong style="color:${col(m.who)}">${esc(m.who || "")}</strong>` : ""}${m.img ? `<img class="pic" src="${m.img}">` : ""}${esc(m.t || "")}<i>${m.ts}${m.f === "me" ? ` <span style="color:${S.profile.rr ? "#3aa9ff" : "inherit"}">✓✓</span>` : ""}</i>${m.r ? `<span class="rx">${m.r}</span>` : ""}<span class="del" data-d="${i}">🗑 Delete</span></div>`).join("") || `<div class="empty">Say hi to ${esc(c.name)} 👋</div>`;
+  box.scrollTop = box.scrollHeight;
+}
+function col(n) { return ["#d6336c","#7048e8","#1c7ed6","#2b8a3e","#e8590c"][[...(n || "")].reduce((a, ch) => a + ch.charCodeAt(0), 0) % 5]; }
+function lightbox(s) { $("lbi").src = s; $("lb").classList.add("on"); }
+function wire() {
+  const c = S.contacts.find(x => x.id === cur);
+  $("emop").innerHTML = Array.from("😀😂🥰😍😘😎🤩🥳😭😅🙈🙏👍👏💖🔥✨🌸🍓🧋🎀").map(e => `<span>${e}</span>`).join("");
+  $("emo").onclick = () => $("emop").classList.toggle("on");
+  $("emop").onclick = e => { if (e.target.tagName === "SPAN") { $("inp").value += e.target.textContent; $("inp").focus(); } };
+  $("img").onchange = e => {
+    const fl = e.target.files[0]; if (!fl) return; const im = new Image();
+    im.onload = () => { const k = Math.min(1, 640 / Math.max(im.width, im.height)), cv = document.createElement("canvas");
+      cv.width = im.width * k; cv.height = im.height * k; cv.getContext("2d").drawImage(im, 0, 0, cv.width, cv.height); send(cv.toDataURL("image/jpeg", .65)); };
+    im.src = URL.createObjectURL(fl); e.target.value = "";
+  };
+  $("msgs").onclick = e => {
+    if (e.target.classList.contains("pic")) return lightbox(e.target.src);
+    if (e.target.dataset.d !== undefined) { c.msgs.splice(+e.target.dataset.d, 1); save(); drawMsgs(); return renderList(); }
+    const b = e.target.closest(".b"); if (b) b.classList.toggle("act");
+  };
+}
+function send(img) {
+  const v = img ? "" : $("inp").value.trim(); if (!v && !img) return;
+  const c = S.contacts.find(x => x.id === cur), id = cur;
+  const mine = { f: "me", t: v, img, ts: now() }; c.msgs.push(mine); if (!img) $("inp").value = ""; $("emop").classList.remove("on");
+  save(); drawMsgs(); renderList(); $("st").textContent = "typing…";
+  const n = c.group && Math.random() > .5 ? 2 : 1;
+  for (let k = 0; k < n; k++) setTimeout(() => {
+    const w = c.group ? S.contacts.find(x => x.id === c.members[Math.random() * c.members.length | 0]) : c;
+    const t = img ? "Nice pic! 😍" : w.ai ? ai(v) : (c.msgs.length < 3 ? GREET : REPLIES)[Math.random() * (c.msgs.length < 3 ? 3 : REPLIES.length) | 0];
+    if (Math.random() < .35) mine.r = ["❤️","😂","👍"][Math.random() * 3 | 0]; c.msgs.push({ f: "them", t, ts: now(), who: w.name }); if (cur !== id) c.unread++; save();
+    if (cur === id) { $("st").textContent = c.st; drawMsgs(); } renderList();
+  }, 900 + k * 1000 + Math.random() * 1200);
+}
+$("add").onclick = () => { $("modal").classList.add("on"); $("cn").focus(); };
+$("cancel").onclick = () => $("modal").classList.remove("on");
+$("pick").innerHTML = EM.map(e => `<span data-e="${e}" class="${e === sel ? "sel" : ""}">${e}</span>`).join("");
+$("pick").onclick = e => { if (e.target.dataset.e) { sel = e.target.dataset.e; [...$("pick").children].forEach(s => s.classList.toggle("sel", s.dataset.e === sel)); } };
+$("save").onclick = () => {
+  const n = $("cn").value.trim(); if (!n) return;
+  S.contacts.unshift({ id: "c" + Date.now(), name: n, em: sel, st: $("cs").value.trim() || "Hey there! I'm using Petalk", phone: $("cp").value.trim(), mood: "😊 Happy", msgs: [], unread: 0 });
+  save(); $("cn").value = $("cs").value = $("cp").value = ""; $("modal").classList.remove("on"); renderList(); open(S.contacts[0].id);
+};
+$("q").oninput = renderList;
+$("out").onclick = () => signOut(auth);
+
+/* ---------- REACTIONS / STATUS / CALLS ---------- */
+let tab = "chats", stT, cT, cS = 0, cC, sb = 0, rxT = 0;
+const fmt = s => String(s / 60 | 0).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+const BGS = [["#ffb88c","#de6262"],["#a18cd1","#fbc2eb"],["#84fab0","#8fd3f4"],["#fccb90","#d57eeb"],["#f6d365","#fda085"]];
+const STORIES = { d1: [{ t: "Best café ever ☕🧋", bg: BGS[0] }], d2: [{ t: "New week, new me ✨", bg: BGS[1] }, { t: "Study mode 📚", bg: BGS[2] }], d3: [{ t: "Leg day 🔥💪", bg: BGS[3] }] };
+const DEMO_CALLS = [{ name: "Mimi", em: "🐱", video: 0, ts: "Yesterday", dur: 312, missed: 0, in: 1 }, { name: "Hamza", em: "🐻", video: 1, ts: "Mon", dur: 0, missed: 1, in: 1 }];
+function bindMsgs() {
+  const box = $("msgs"); let t; const pick = b => showRx(b);
+  box.ondblclick = e => { const b = e.target.closest(".b"); if (b) pick(b); };
+  box.oncontextmenu = e => { const b = e.target.closest(".b"); if (b) { e.preventDefault(); pick(b); } };
+  box.ontouchstart = e => { const b = e.target.closest(".b"); if (b) t = setTimeout(() => pick(b), 500); };
+  box.ontouchend = box.ontouchmove = () => clearTimeout(t);
+}
+function showRx(b) {
+  const r = b.getBoundingClientRect(), x = $("rx"); rxT = Date.now();
+  x.innerHTML = ["❤️","😂","😮","😢","👍","🙏"].map(e => `<span>${e}</span>`).join("");
+  x.style.display = "flex"; x.style.left = Math.max(8, Math.min(r.left, innerWidth - 280)) + "px"; x.style.top = Math.max(8, r.top - 52) + "px";
+  x.onclick = e => { if (e.target.tagName !== "SPAN") return; const m = S.contacts.find(z => z.id === cur).msgs[+b.dataset.i];
+    m.r = m.r === e.target.textContent ? "" : e.target.textContent; save(); x.style.display = "none"; drawMsgs(); };
+}
+document.addEventListener("click", e => { if (!e.target.closest("#rx") && Date.now() - rxT > 400) $("rx").style.display = "none"; });
+$("tabs").onclick = e => { const b = e.target.closest("button"); if (!b) return; tab = b.dataset.t; [...$("tabs").children].forEach(x => x.classList.toggle("on", x === b)); renderList(); };
+function renderStatus() {
+  const rows = S.contacts.filter(c => STORIES[c.id]).map(c => `<div class="ct" data-s="${c.id}"><div class="av ring ${S.seen[c.id] ? "seen" : ""}">${c.em}</div><div class="m"><div class="n">${esc(c.name)}</div><div class="s">${STORIES[c.id].length} update${STORIES[c.id].length > 1 ? "s" : ""} · Today</div></div></div>`).join("");
+  $("list").innerHTML = `<div class="ct" id="mys"><div class="av ${S.my.length ? "ring" : ""}">${S.my.length ? pAv(S.profile) : "➕"}</div><div class="m"><div class="n">My status</div><div class="s">${S.my.length ? S.my.length + " update(s) · tap to view" : "Tap to add a status update"}</div></div>${S.my.length ? '<button class="ib" id="adds">➕</button>' : ""}</div><p class="sec">Recent updates</p>${rows}`;
+  $("mys").onclick = e => { if (e.target.closest("#adds") || !S.my.length) openStm(); else viewStory(S.my, S.profile.name, pAv(S.profile)); };
+  document.querySelectorAll("[data-s]").forEach(e => e.onclick = () => { const c = S.contacts.find(x => x.id === e.dataset.s); viewStory(STORIES[c.id], c.name, c.em, c.id); });
+}
+function viewStory(it, name, em, key) {
+  let i = 0; const o = $("story"); o.style.display = "flex";
+  const close = () => { clearTimeout(stT); o.style.display = "none"; if (key) { S.seen[key] = 1; save(); renderList(); } };
+  const show = () => {
+    clearTimeout(stT); if (i >= it.length) return close(); if (i < 0) i = 0; const s = it[i];
+    o.style.background = `linear-gradient(135deg,${s.bg[0]},${s.bg[1]})`;
+    $("stbars").innerHTML = it.map((_, j) => `<span><b style="${j < i ? "width:100%" : j === i ? "animation:fill 4s linear forwards" : ""}"></b></span>`).join("");
+    $("sthead").innerHTML = `<div class="av">${em}</div><b>${esc(name)}</b>`; $("sttext").textContent = s.t;
+    stT = setTimeout(() => { i++; show(); }, 4000);
+  };
+  $("stnext").onclick = () => { i++; show(); }; $("stprev").onclick = () => { i--; show(); }; $("stx").onclick = close; show();
+}
+function openStm() { $("stm").classList.add("on"); $("stt").value = ""; drawStc(); }
+const drawStc = () => $("stc").innerHTML = BGS.map((b, i) => `<span class="sw ${sb === i ? "sel" : ""}" data-i="${i}" style="background:linear-gradient(135deg,${b[0]},${b[1]})"></span>`).join("");
+$("stc").onclick = e => { if (e.target.dataset.i) { sb = +e.target.dataset.i; drawStc(); } };
+$("stq").onclick = () => $("stm").classList.remove("on");
+$("stp").onclick = () => { const t = $("stt").value.trim(); if (!t) return; S.my.push({ t, bg: BGS[sb], ts: now() }); save(); $("stm").classList.remove("on"); renderList(); };
+function renderCalls() {
+  $("list").innerHTML = S.calls.map((c, i) => `<div class="ct" data-k="${i}"><div class="av">${c.em}</div><div class="m"><div class="n" style="${c.missed ? "color:#e0436b" : ""}">${esc(c.name)}</div><div class="s">${c.missed ? "↙ Missed" : c.in ? "↙ Incoming" : "↗ Outgoing"} · ${c.ts}${c.dur ? " · " + fmt(c.dur) : ""}</div></div><span style="font-size:20px">${c.video ? "🎥" : "📞"}</span></div>`).join("") || '<div class="empty" style="padding:30px">No calls yet 📞</div>';
+  document.querySelectorAll("[data-k]").forEach(e => e.onclick = () => { const k = S.calls[e.dataset.k], c = S.contacts.find(x => x.name === k.name); if (c) startCall(c, k.video); });
+}
+function startCall(c, v) {
+  cC = c; cS = 0; const o = $("call"); o.className = v ? "vid" : ""; o.style.display = "flex";
+  $("cav").innerHTML = c.em; $("cname").textContent = c.name; $("cst").textContent = v ? "Video calling…" : "Calling…";
+  $("cme").style.display = v ? "block" : "none"; $("cme").innerHTML = pAv(S.profile);
+  clearInterval(cT); clearTimeout(cT);
+  cT = setTimeout(() => { $("cst").textContent = "Connected 00:00"; cT = setInterval(() => { cS++; $("cst").textContent = "Connected " + fmt(cS); }, 1000); }, 2200);
+}
+$("cend").onclick = () => { clearTimeout(cT); clearInterval(cT); const o = $("call"); o.style.display = "none"; S.calls.unshift({ name: cC.name, em: cC.em, video: o.className === "vid" ? 1 : 0, ts: now(), dur: cS, missed: 0, in: 0 }); save(); if (tab === "calls") renderList(); };
+$("cmute").onclick = e => { const b = e.currentTarget; b.classList.toggle("off"); b.textContent = b.classList.contains("off") ? "🔇" : "🎤"; };
+$("cspk").onclick = e => { const b = e.currentTarget; b.classList.toggle("off"); b.textContent = b.classList.contains("off") ? "🔈" : "🔊"; };
+
+/* ---------- PROFILE + BITMOJI ---------- */
+const SK = ["#ffe0c7","#f5c9a0","#d9a066","#a8714a","#6b4429"], HC = ["#3b2a20","#8b5a2b","#e8c15a","#ff6fa5","#8a5cf6","#2b2b2b"];
+const BG = ["#ffd6e7","#e6dcff","#d4f5ee","#fff1c2","#d6e6ff"], SH = ["#ff8fb8","#c9b6ff","#7ed6c4","#ffd166","#6aa7ff"];
+const OPT = { skin: SK, style: 4, hair: HC, eyes: 3, mouth: 3, acc: 4, bg: BG, shirt: SH };
+const LAB = { skin: "Skin", style: "Hair style", hair: "Hair color", eyes: "Eyes", mouth: "Mouth", acc: "Extra", bg: "Background", shirt: "Outfit" };
+const MOODS = ["😊 Happy","🥰 In love","😎 Cool","🤩 Excited","😴 Sleepy","😢 Sad","🍕 Hungry","💪 Focused","🌧️ Moody"];
+const st = (c, w = 3) => `stroke="${c}" stroke-width="${w}" fill="none" stroke-linecap="round"`;
+function avatar(p) {
+  const s = SK[p.skin], h = HC[p.hair];
+  const back = ["", `<path d="M20 52Q18 14 50 14Q82 14 80 52L82 80L18 80Z" fill="${h}"/>`, `<circle cx="25" cy="26" r="11" fill="${h}"/><circle cx="75" cy="26" r="11" fill="${h}"/>`, ""][p.style];
+  const front = p.style == 3 ? "" : `<path d="M22 48Q22 18 50 18Q78 18 78 48Q64 32 50 34Q36 32 22 48Z" fill="${h}"/>`;
+  const eyes = [`<circle cx="40" cy="52" r="3.5" fill="#3b2a2a"/><circle cx="60" cy="52" r="3.5" fill="#3b2a2a"/>`,
+    `<path d="M35 53Q40 46 45 53M55 53Q60 46 65 53" ${st("#3b2a2a")}/>`,
+    `<circle cx="40" cy="52" r="5" fill="#3b2a2a"/><circle cx="60" cy="52" r="5" fill="#3b2a2a"/><circle cx="42" cy="50" r="1.8" fill="#fff"/><circle cx="62" cy="50" r="1.8" fill="#fff"/>`][p.eyes];
+  const mouth = [`<path d="M41 65Q50 74 59 65" ${st("#c2415d")}/>`, `<path d="M40 64Q50 80 60 64Z" fill="#c2415d"/>`, `<path d="M40 66Q45 72 50 66Q55 72 60 66" ${st("#c2415d", 2.5)}/>`][p.mouth];
+  const acc = ["", `<g ${st("#4a3350", 2.5)}><circle cx="40" cy="52" r="9"/><circle cx="60" cy="52" r="9"/><path d="M49 52h2"/></g>`,
+    `<path d="M70 20l14-8v20zM70 20L56 12v20z" fill="#ff5c9d"/><circle cx="70" cy="20" r="4" fill="#ff8fb8"/>`, `<text x="64" y="28" font-size="20">🌸</text>`][p.acc];
+  return `<svg viewBox="0 0 100 100" style="width:100%;height:100%;display:block"><rect width="100" height="100" fill="${BG[p.bg]}"/>${back}<rect x="44" y="74" width="12" height="12" fill="${s}"/><path d="M16 100Q20 82 50 82Q80 82 84 100Z" fill="${SH[p.shirt]}"/><circle cx="50" cy="52" r="28" fill="${s}"/><circle cx="32" cy="62" r="5" fill="#ff9db8" opacity=".5"/><circle cx="68" cy="62" r="5" fill="#ff9db8" opacity=".5"/>${eyes}${mouth}${front}${acc}</svg>`;
+}
+const refreshMe = () => { $("myav").innerHTML = pAv(S.profile); applyTheme(); $("me").textContent = S.profile.name; $("mymood").textContent = S.profile.mood + " · " + S.profile.bio; };
+const pAv = p => p.photo ? `<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover">` : avatar(p.av);
+const ACC = [["#ff8fb8","#c9b6ff","#ffd6e7"],["#5fcfb8","#6aa7ff","#cdf3ea"],["#ffa94d","#ff8fb8","#ffe4c4"],["#9b6bff","#6aa7ff","#e3d7ff"]];
+const ABOUT = ["Available","Busy","At school","At the gym","Sleeping","Battery about to die","Urgent calls only"];
+function applyTheme() {
+  const p = S.profile, a = ACC[p.acc || 0], r = document.documentElement.style;
+  r.setProperty("--p", a[0]); r.setProperty("--l", a[1]); r.setProperty("--p2", a[2]); r.setProperty("--me", a[2]);
+  document.body.classList.toggle("dark", !!p.dark);
+}
+let D;
+function drawPf() {
+  $("pfav").innerHTML = pAv(D);
+  $("pfopts").innerHTML = Object.keys(OPT).map(k => { const o = OPT[k], a = Array.isArray(o), n = a ? o.length : o;
+    return `<div class="row"><b>${LAB[k]}</b><div>${Array.from({ length: n }, (_, i) => `<span class="sw ${D.av[k] === i ? "sel" : ""}" data-k="${k}" data-i="${i}" style="${a ? "background:" + o[i] : ""}">${a ? "" : i + 1}</span>`).join("")}</div></div>`; }).join("");
+  $("pfmood").innerHTML = MOODS.map(m => `<span class="chip ${D.mood === m ? "sel" : ""}" data-m="${m}">${m}</span>`).join("");
+  $("pfabout").innerHTML = ABOUT.map(a => `<span class="chip" data-a="${a}">${a}</span>`).join("");
+  $("pfacc").innerHTML = ACC.map((a, i) => `<span class="sw ${(D.acc || 0) === i ? "sel" : ""}" data-c="${i}" style="background:linear-gradient(135deg,${a[0]},${a[1]})"></span>`).join("");
+}
+function openProfile() {
+  $("pft").textContent = S.profile.done ? "My Profile 🌷" : "Set up your profile 🌷";
+  D = JSON.parse(JSON.stringify(S.profile));
+  $("pn").value = D.name; $("pb").value = D.bio; $("pp").value = D.phone; $("pu").value = D.user || ""; $("pbd").value = D.bday || ""; $("pls").checked = !!D.ls; $("prr").checked = !!D.rr; $("pdk").checked = !!D.dark;
+  $("pf").classList.add("on"); drawPf();
+}
+$("pfopts").onclick = e => { const k = e.target.dataset.k; if (k) { D.av[k] = +e.target.dataset.i; drawPf(); } };
+$("pfmood").onclick = e => { if (e.target.dataset.m) { D.mood = e.target.dataset.m; drawPf(); } };
+$("rnd").onclick = () => { for (const k in OPT) { const o = OPT[k]; D.av[k] = Math.random() * (Array.isArray(o) ? o.length : o) | 0; } drawPf(); };
+$("pfabout").onclick = e => { if (e.target.dataset.a) $("pb").value = e.target.dataset.a; };
+$("pfacc").onclick = e => { if (e.target.dataset.c) { D.acc = +e.target.dataset.c; drawPf(); } };
+$("pphx").onclick = () => { D.photo = ""; drawPf(); };
+$("pph").onchange = e => {
+  const fl = e.target.files[0]; if (!fl) return;
+  const img = new Image(); img.onload = () => {
+    const c = document.createElement("canvas"), s = Math.min(img.width, img.height); c.width = c.height = 180;
+    c.getContext("2d").drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 180, 180);
+    D.photo = c.toDataURL("image/jpeg", .8); drawPf();
+  }; img.src = URL.createObjectURL(fl);
+};
+$("pfx").onclick = () => { S.profile.done = true; save(); $("pf").classList.remove("on"); };
+$("pfsave").onclick = async () => {
+  D.name = $("pn").value.trim() || D.name; D.bio = $("pb").value.trim(); D.phone = $("pp").value.trim(); D.user = $("pu").value.trim().replace(/^@/, ""); D.bday = $("pbd").value; D.ls = $("pls").checked; D.rr = $("prr").checked; D.dark = $("pdk").checked; D.done = true;
+  S.profile = D; save(); refreshMe(); $("pf").classList.remove("on");
+  try { await updateProfile(auth.currentUser, { displayName: D.name }); } catch {}
+};
+$("myav").onclick = $("mybox").onclick = openProfile;
+function showInfo(c) {
+  if (c.group) { $("ifbody").innerHTML = `<div class="av" style="width:90px;height:90px;font-size:52px;margin:auto">${c.em}</div><h1>${esc(c.name)}</h1><p>${c.members.length + 1} members</p><div class="irow">⭐ You (admin)</div>` + c.members.map(i => { const m = S.contacts.find(x => x.id === i); return `<div class="irow">${m.em} ${esc(m.name)}</div>`; }).join(""); $("inf").classList.add("on"); return; }
+  $("ifbody").innerHTML = `<div class="av" style="width:90px;height:90px;font-size:52px;margin:auto">${c.em}</div><h1>${esc(c.name)}</h1>
+  <div class="irow"><small>Bio</small>${esc(c.st)}</div><div class="irow"><small>Mood</small>${esc(c.mood || "😊 Happy")}</div>
+  <div class="irow"><small>Phone</small>${c.phone && c.phone !== "—" ? `<a href="tel:${esc(c.phone)}">${esc(c.phone)}</a>` : "Not added"}</div>`;
+  $("inf").classList.add("on");
+}
+$("ifx").onclick = () => $("inf").classList.remove("on");
+/* ---------- GROUPS ---------- */
+const GEM = ["👯","🎉","🏖️","📚","🍕","🎮","💼","🌈"]; let gsel = GEM[0];
+$("grp").onclick = () => {
+  $("gpick").innerHTML = GEM.map(e => `<span data-e="${e}" class="${e === gsel ? "sel" : ""}">${e}</span>`).join("");
+  $("gmem").innerHTML = S.contacts.filter(c => !c.group).map(c => `<label class="irow" style="display:flex;gap:8px;align-items:center;margin:3px 0"><input type="checkbox" value="${c.id}" style="width:auto;margin:0">${c.em} ${esc(c.name)}</label>`).join("");
+  $("gm").classList.add("on");
+};
+$("gpick").onclick = e => { if (e.target.dataset.e) { gsel = e.target.dataset.e; [...$("gpick").children].forEach(s => s.classList.toggle("sel", s.dataset.e === gsel)); } };
+$("gx").onclick = () => $("gm").classList.remove("on");
+$("gsave").onclick = () => {
+  const n = $("gn").value.trim(), ids = [...$("gmem").querySelectorAll("input:checked")].map(i => i.value);
+  if (!n) return alert("Give your group a name 🎀"); if (ids.length < 2) return alert("Pick at least 2 members 👥");
+  const names = ids.map(i => S.contacts.find(c => c.id === i).name);
+  S.contacts.unshift({ id: "g" + Date.now(), name: n, em: gsel, group: true, members: ids, st: "You, " + names.join(", "), unread: 0, msgs: [{ sys: 1, t: "You created group “" + n + "” 🎉", ts: now() }] });
+  save(); $("gn").value = ""; $("gm").classList.remove("on"); renderList(); open(S.contacts[0].id);
+};
+
+onAuthStateChanged(auth, u => {
+  $("authView").style.display = u ? "none" : "grid";
+  $("app").style.display = u ? "flex" : "none";
+  if (!u) { cur = null; $("app").classList.remove("chat"); return; }
+  uid = u.uid;
+  S = JSON.parse(localStorage.getItem("cc_" + uid) || "null") || seed();
+  S.profile ||= { name: u.displayName || "Cutie", bio: "Hey there! I'm using Petalk 🌸", mood: "😊 Happy", phone: "", ls: true, rr: true, user: "", bday: "", photo: "", acc: 0, dark: false, av: { skin: 1, style: 0, hair: 0, eyes: 1, mouth: 0, acc: 2, bg: 0, shirt: 0 } };
+  S.calls ||= DEMO_CALLS; S.my ||= []; S.seen ||= {}; tab = "chats";
+  refreshMe(); renderList(); if (!S.profile.done) openProfile();
+  $("main").innerHTML = '<div class="empty">🌸<br>Pick a chat to start talking!</div>';
+});
+</script>
+</body></html>

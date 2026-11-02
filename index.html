@@ -76,8 +76,20 @@ html,body{height:100%}.app{height:100dvh}
 #stbars{position:absolute;top:10px;left:10px;right:10px;display:flex;gap:4px}#stbars span{flex:1;height:3px;background:#fff5;border-radius:3px;overflow:hidden}#stbars b{display:block;height:100%;width:0;background:#fff}@keyframes fill{to{width:100%}}
 #sthead{position:absolute;top:24px;left:14px;display:flex;gap:10px;align-items:center;color:#fff}#sthead .av{width:38px;height:38px;font-size:20px;color:#333}
 #stx{position:absolute;top:20px;right:14px;z-index:2;background:#0004;color:#fff;border-radius:50%;width:36px;height:36px}
-#sttext{font-size:28px;font-weight:800;text-align:center;padding:30px;text-shadow:0 2px 8px #0003}#stprev,#stnext{position:absolute;top:70px;bottom:0;width:40%}#stprev{left:0}#stnext{right:0}
+#sttext{font-size:28px;font-weight:800;text-align:center;padding:30px;text-shadow:0 2px 8px #0003}#stprev,#stnext{position:absolute;top:70px;bottom:90px;width:40%}#stprev{left:0}#stnext{right:0}
 body.dark .tabs{background:#3a2d47}@media(max-width:700px){.b{max-width:84%}}
+/* NEW: menu, block bar, wallpaper, toast, status bar */
+.cmenu{display:none;position:absolute;top:58px;right:10px;background:#fff;border-radius:16px;box-shadow:var(--sh);padding:6px;z-index:8;min-width:220px}.cmenu.on{display:block}
+.cmenu div{padding:10px 12px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:700}.cmenu div:hover{background:var(--p2)}
+.blkbar{display:none;padding:14px;text-align:center;background:#fff;border-top:2px solid var(--p2);font-size:14px}
+body.dark .cmenu,body.dark .blkbar{background:#3a2d47;color:#f3e8ff}
+.wpg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+.wpt{aspect-ratio:1;border-radius:14px;border:3px solid transparent;cursor:pointer;display:grid;place-items:center;font-size:11px;font-weight:800;color:#4a3350;box-shadow:0 0 0 1px #d9c3d3}.wpt.sel{border-color:var(--p)}
+#toast{position:fixed;top:max(14px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:#4a3350;color:#fff;padding:10px 16px;border-radius:18px;z-index:60;display:none;max-width:90vw;box-shadow:var(--sh);font-size:14px}
+#am{z-index:40}#pm{z-index:50}
+#stbot{position:absolute;left:0;right:0;bottom:0;padding:12px 14px max(14px,env(safe-area-inset-bottom));display:flex;gap:8px;align-items:center;z-index:3}
+#stbot input{flex:1;padding:12px 16px;border-radius:22px;border:2px solid #fff8;background:#0003;color:#fff}#stbot input::placeholder{color:#fffb}
+#stbot button{min-width:44px;height:44px;border-radius:22px;background:#fff4;color:#fff;font-size:16px;padding:0 12px}
 </style></head>
 <body>
 <!-- SIGN IN / SIGN UP -->
@@ -110,7 +122,7 @@ body.dark .tabs{background:#3a2d47}@media(max-width:700px){.b{max-width:84%}}
 <div class="modal" id="stm"><div class="card"><h1>New Status 🌈</h1><input id="stt" placeholder="What's on your mind?"><div class="pick" id="stc"></div><button class="btn" id="stp">Post</button><button class="link" id="stq">Cancel</button></div></div>
 <div id="rx"></div>
 <div id="call"><div id="cme"></div><div class="cav" id="cav"></div><h2 id="cname"></h2><p id="cst"></p><div class="cbtns"><button id="cmute">🎤</button><button id="cspk">🔊</button><button id="cend" style="background:#ff4d6d">📵</button></div></div>
-<div id="story"><div id="stbars"></div><div id="sthead"></div><div id="sttext"></div><div id="stprev"></div><div id="stnext"></div><button id="stx">✕</button></div>
+<div id="story"><div id="stbars"></div><div id="sthead"></div><div id="sttext"></div><div id="stprev"></div><div id="stnext"></div><button id="stx">✕</button><div id="stbot"></div></div>
 <!-- PROFILE -->
 <div class="modal" id="pf"><div class="card" style="max-width:460px"><h1 id="pft">My Profile 🌷</h1><div class="pfav" id="pfav"></div>
 <div><label class="btn" style="display:inline-block;width:auto;padding:8px 14px;font-size:13px">📷 Upload photo<input type="file" id="pph" accept="image/*" hidden></label>
@@ -126,6 +138,16 @@ body.dark .tabs{background:#3a2d47}@media(max-width:700px){.b{max-width:84%}}
 <button class="btn" id="pfsave">Save Profile</button><button class="link" id="pfx">Skip for now</button></div></div>
 <!-- CONTACT INFO -->
 <div class="modal" id="inf"><div class="card"><div id="ifbody"></div><button class="btn" id="ifx">Close</button></div></div>
+<!-- WALLPAPER -->
+<div class="modal" id="wm"><div class="card"><h1>Wallpaper 🎨</h1><div class="wpg" id="wpg"></div>
+<label class="btn" style="display:block;padding:11px;cursor:pointer;margin-top:0">🖼️ Choose from gallery<input type="file" id="wpf" accept="image/*" hidden></label>
+<label class="irow" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="wpa" style="width:auto;margin:0"> Apply to all chats</label>
+<button class="link" id="wpx">Done</button></div></div>
+<!-- PIN -->
+<div class="modal" id="pm"><div class="card"><h1 id="pmt">🔒</h1><input id="pmi" type="password" inputmode="numeric" maxlength="6" placeholder="••••" style="text-align:center;letter-spacing:8px;font-size:22px"><div class="err" id="pme"></div><button class="btn" id="pmok">OK</button><button class="link" id="pmx">Cancel</button></div></div>
+<!-- STATUS ACTIVITY -->
+<div class="modal" id="am"><div class="card"><div id="amb"></div><button class="btn" id="amx">Close</button></div></div>
+<div id="toast"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -176,9 +198,12 @@ $("go").onclick = async () => {
 const EM = ["🐱","🐻","🦊","🐼","🐨","🦄","🐸","🐥","🌸","🍓"];
 const REPLIES = ["Haha yes! 😂","Omg really?? 😳","Aww that's so sweet 🥹","Tell me more!","I was just thinking about you 💕","Okayyy 👌","Lol same","No way!! 🙈","Let's meet up soon 🧋","Hehe 🌸","You're the best 💖"];
 const GREET = ["Heyyy! 💕","Hii cutie! 🎀","Hello hello 🌷"];
-let uid, S, cur = null, sel = EM[0];
+const EMPTY = '<div class="empty">🌸<br>Pick a chat to start talking!</div>';
+let uid, S, cur = null, sel = EM[0], ul = null, showArch = false;
+const h = p => btoa(uid + ":" + p);
 const now = () => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 const save = () => { try { localStorage.setItem("cc_" + uid, JSON.stringify(S)); } catch { alert("Storage full 🗑 — delete some photos"); } };
+let tT; const toast = t => { const e = $("toast"); e.textContent = t; e.style.display = "block"; clearTimeout(tT); tT = setTimeout(() => e.style.display = "none", 2800); };
 const seed = () => ({ contacts: [
   { id: "ai", name: "Petal AI ✨", em: "🤖", mood: "🤖 Always online", phone: "—", st: "Your cute assistant", ai: 1, unread: 1, msgs: [{ f: "them", t: "Hi! I'm Petal AI ✨ Ask me for a joke, the time, math (2+2), advice, or just chat!", ts: now() }] },
   { id: "d1", name: "Mimi", em: "🐱", mood: "🥰 In love", phone: "+92 300 1112233", st: "Living my best life 🌈", msgs: [{ f: "them", t: "Heyy! Did you see the new café? 🧋", ts: now() }], unread: 1 },
@@ -202,22 +227,90 @@ function renderList() {
   $("q").style.display = tab === "chats" ? "" : "none";
   if (tab === "status") return renderStatus();
   if (tab === "calls") return renderCalls();
-  const q = $("q").value.toLowerCase();
-  $("list").innerHTML = S.contacts.filter(c => c.name.toLowerCase().includes(q)).map(c => {
+  const q = $("q").value.toLowerCase(), na = S.contacts.filter(c => c.arch).length;
+  if (showArch && !na) showArch = false;
+  const vis = S.contacts.filter(c => !!c.arch === showArch && c.name.toLowerCase().includes(q));
+  const top = showArch ? `<div class="ct" id="archb"><div class="av">⬅️</div><div class="m"><div class="n">Archived chats</div><div class="s">Tap to go back</div></div></div>`
+    : na ? `<div class="ct" id="archb"><div class="av">📦</div><div class="m"><div class="n">Archived</div></div><small>${na}</small></div>` : "";
+  $("list").innerHTML = top + vis.map(c => {
     const l = c.msgs[c.msgs.length - 1];
-    return `<div class="ct ${cur === c.id ? "on" : ""}" data-id="${c.id}"><div class="av">${c.em}</div><div class="m"><div class="n">${esc(c.name)}</div><div class="s">${l ? (l.img ? "📷 Photo" : esc(l.t)) : esc(c.st)}</div></div><div><small>${l ? l.ts : ""}</small>${c.unread ? `<span class="bd">${c.unread}</span>` : ""}</div></div>`;
-  }).join("");
-  document.querySelectorAll(".ct").forEach(e => e.onclick = () => open(e.dataset.id));
+    const prev = c.pin ? "🔒 Private chat" : l ? (l.img ? "📷 Photo" : esc(l.t)) : esc(c.st);
+    return `<div class="ct ${cur === c.id ? "on" : ""}" data-id="${c.id}"><div class="av">${c.em}</div><div class="m"><div class="n">${esc(c.name)}${c.mute ? " 🔇" : ""}${c.pin ? " 🔒" : ""}${c.blocked ? " 🚫" : ""}</div><div class="s">${prev}</div></div><div><small>${l && !c.pin ? l.ts : ""}</small>${c.unread ? `<span class="bd" style="${c.mute ? "background:#bbb" : ""}">${c.pin ? "•" : c.unread}</span>` : ""}</div></div>`;
+  }).join("") + (showArch && !vis.length ? '<div class="empty" style="padding:30px">No archived chats</div>' : "");
+  if ($("archb")) $("archb").onclick = () => { showArch = !showArch; renderList(); };
+  document.querySelectorAll(".ct[data-id]").forEach(e => e.onclick = () => open(e.dataset.id));
 }
-const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 function open(id) {
-  cur = id; const c = S.contacts.find(x => x.id === id); c.unread = 0; save();
+  const c = S.contacts.find(x => x.id === id);
+  if (c.pin && ul !== id) return askPin("🔒 Private chat — enter PIN", () => { ul = id; open(id); }, v => h(v) === c.pin);
+  ul = c.pin ? id : null; cur = id; c.unread = 0; save();
   $("app").classList.add("chat");
-  $("main").innerHTML = `<div class="hd" id="hd" style="cursor:pointer"><button class="ib back" id="bk">←</button><div class="av">${c.em}</div><div style="flex:1;min-width:0"><div class="t">${esc(c.name)}</div><div class="st" id="st">${esc(c.st)}</div></div><button class="ib" id="vc">🎥</button><button class="ib" id="ac">📞</button></div><div class="msgs" id="msgs"></div><div class="emopanel" id="emop"></div><div class="bar"><button class="ib" id="emo" type="button">😊</button><label class="ib" style="display:grid;place-items:center;cursor:pointer">📎<input type="file" id="img" accept="image/*" hidden></label><input id="inp" placeholder="Type a message 💬" autocomplete="off"><button class="send" id="snd">➤</button></div>`;
-  $("bk").onclick = () => { cur = null; $("app").classList.remove("chat"); renderList(); };
-  $("hd").onclick = e => { if (!e.target.closest("#bk,#vc,#ac")) showInfo(c); }; $("vc").onclick = () => startCall(c, 1); $("ac").onclick = () => startCall(c, 0); $("snd").onclick = () => send(); $("inp").onkeydown = e => e.key === "Enter" && send();
-  wire(); bindMsgs(); drawMsgs(); renderList(); $("inp").focus();
+  $("main").innerHTML = `<div class="hd" id="hd" style="cursor:pointer"><button class="ib back" id="bk">←</button><div class="av">${c.em}</div><div style="flex:1;min-width:0"><div class="t">${esc(c.name)}</div><div class="st" id="st">${esc(c.st)}</div></div><button class="ib" id="vc">🎥</button><button class="ib" id="ac">📞</button><button class="ib" id="mnb">⋮</button></div><div class="cmenu" id="cmenu"></div><div class="msgs" id="msgs"></div><div class="emopanel" id="emop"></div><div class="bar"><button class="ib" id="emo" type="button">😊</button><label class="ib" style="display:grid;place-items:center;cursor:pointer">📎<input type="file" id="img" accept="image/*" hidden></label><input id="inp" placeholder="Type a message 💬" autocomplete="off"><button class="send" id="snd">➤</button></div><div class="blkbar" id="blkbar">🚫 You blocked ${esc(c.name)} <button class="link" id="unb" style="margin:0 0 0 8px">Unblock</button></div>`;
+  $("bk").onclick = () => { cur = null; ul = null; $("app").classList.remove("chat"); renderList(); };
+  $("hd").onclick = e => { if (!e.target.closest("#bk,#vc,#ac,#mnb")) showInfo(c); }; $("vc").onclick = () => startCall(c, 1); $("ac").onclick = () => startCall(c, 0); $("snd").onclick = () => send(); $("inp").onkeydown = e => e.key === "Enter" && send();
+  $("mnb").onclick = () => { const m = $("cmenu"); m.innerHTML = menu(c).map(([a, t]) => `<div data-a="${a}">${t}</div>`).join(""); m.classList.toggle("on"); };
+  $("cmenu").onclick = e => { const a = e.target.dataset.a; if (a) { $("cmenu").classList.remove("on"); menuAct(c, a); } };
+  $("unb").onclick = () => menuAct(c, "blk");
+  wire(); bindMsgs(); drawMsgs(); applyWp(); applyState(c); renderList(); if (!c.blocked) $("inp").focus();
 }
+document.addEventListener("click", e => { if (!e.target.closest("#cmenu,#mnb")) $("cmenu")?.classList.remove("on"); });
+function menu(c) {
+  return [["mute", c.mute ? "🔔 Unmute notifications" : "🔕 Mute notifications"], ["arch", c.arch ? "📤 Unarchive chat" : "📦 Archive chat"], ["wp", "🎨 Wallpaper"], ["clr", "🧹 Clear chat"],
+    ...(!c.group && !c.ai ? [["blk", c.blocked ? "✅ Unblock" : "🚫 Block"]] : []), ["lock", c.pin ? "🔓 Remove private lock" : "🔒 Make private (PIN)"]];
+}
+function applyState(c) {
+  $("blkbar").style.display = c.blocked ? "block" : "none";
+  document.querySelector(".bar").style.display = c.blocked ? "none" : "flex";
+  $("emop").classList.remove("on");
+}
+function menuAct(c, a) {
+  if (a === "mute") { c.mute = !c.mute; toast(c.mute ? "🔕 Notifications muted" : "🔔 Notifications on"); }
+  else if (a === "arch") { c.arch = !c.arch; toast(c.arch ? "📦 Chat archived" : "📤 Moved back to chats"); if (c.arch) { cur = null; ul = null; $("app").classList.remove("chat"); $("main").innerHTML = EMPTY; } }
+  else if (a === "wp") return openWm(c);
+  else if (a === "clr") { if (!confirm("Clear all messages in this chat? 🧹")) return; c.msgs = []; save(); drawMsgs(); toast("🧹 Chat cleared"); }
+  else if (a === "blk") {
+    if (c.blocked) { c.blocked = 0; toast("✅ Unblocked"); }
+    else { if (!confirm("Block " + c.name + "? You won't be able to message or call them.")) return; c.blocked = 1; toast("🚫 Blocked"); }
+    applyState(c); if (!c.blocked && $("inp")) $("inp").focus();
+  }
+  else if (a === "lock") {
+    if (c.pin) askPin("Enter PIN to remove lock", () => { delete c.pin; ul = null; save(); toast("🔓 Lock removed"); renderList(); }, v => h(v) === c.pin);
+    else askPin("Create a PIN 🔒", p => askPin("Confirm your PIN", q => { if (p !== q) return toast("PINs didn't match 🙈"); c.pin = h(p); ul = c.id; save(); toast("🔒 Chat is now private"); renderList(); }));
+  }
+  save(); renderList();
+}
+/* PIN */
+let pmCb, pmChk;
+function askPin(t, cb, chk) { pmCb = cb; pmChk = chk; $("pmt").textContent = t; $("pmi").value = ""; $("pme").textContent = ""; $("pm").classList.add("on"); setTimeout(() => $("pmi").focus(), 50); }
+$("pmok").onclick = () => { const v = $("pmi").value; if (!/^\d{4,6}$/.test(v)) return $("pme").textContent = "Use 4–6 digits"; if (pmChk && !pmChk(v)) return $("pme").textContent = "Wrong PIN 🙈"; $("pm").classList.remove("on"); pmCb(v); };
+$("pmx").onclick = () => $("pm").classList.remove("on");
+$("pmi").onkeydown = e => e.key === "Enter" && $("pmok").click();
+/* WALLPAPER */
+const emoSvg = (e, z) => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='${z}' height='${z}'><text x='8' y='${z * .6}' font-size='${z * .4}' opacity='.35'>${e}</text></svg>`)}")`;
+const WPS = [["Default", ""], ["Blush", "linear-gradient(160deg,#ffe3f0,#ffc2da)"], ["Lilac", "linear-gradient(160deg,#efe6ff,#c9b6ff)"], ["Mint", "linear-gradient(160deg,#dcf8ef,#a8e6cf)"],
+  ["Sunset", "linear-gradient(160deg,#ffe0b5,#ff9fc0)"], ["Sky", "linear-gradient(160deg,#dbeaff,#a0c4ff)"], ["Night", "linear-gradient(160deg,#2b1f3a,#5a4580)"],
+  ["Dots", "radial-gradient(#ffb3d1 2px,transparent 2px) 0 0/22px 22px,#fff5fa"], ["Stripes", "repeating-linear-gradient(45deg,#fff5fa,#fff5fa 12px,#ffe3f0 12px,#ffe3f0 24px)"],
+  ["Hearts", emoSvg("💗", 56) + " 0 0/56px 56px,#fff0f7"], ["Flowers", emoSvg("🌸", 56) + " 0 0/56px 56px,#f6f0ff"], ["Stars", emoSvg("⭐", 56) + " 0 0/56px 56px,#fff9e6"]];
+let wc;
+const wpCss = v => !v ? "" : v.startsWith("data:") ? `center/cover url(${v})` : WPS[+v][1];
+const curWp = c => c.wp !== undefined ? c.wp : S.wpAll || "";
+function applyWp() { const c = S.contacts.find(x => x.id === cur); if (c && $("msgs")) $("msgs").style.background = wpCss(curWp(c)); }
+function drawWm() {
+  const v = curWp(wc);
+  $("wpg").innerHTML = WPS.map((w, i) => `<div class="wpt ${(i ? String(i) : "") === v ? "sel" : ""}" data-w="${i}">${i ? "" : "Default"}</div>`).join("");
+  [...$("wpg").children].forEach((d, i) => d.style.background = WPS[i][1]);
+}
+function openWm(c) { wc = c; $("wpa").checked = false; drawWm(); $("wm").classList.add("on"); }
+function setWp(v) { if ($("wpa").checked) { S.wpAll = v; S.contacts.forEach(x => delete x.wp); } else wc.wp = v; save(); drawWm(); applyWp(); }
+$("wpg").onclick = e => { const w = e.target.dataset.w; if (w !== undefined) setWp(w === "0" ? "" : w); };
+$("wpx").onclick = () => $("wm").classList.remove("on");
+$("wpf").onchange = e => {
+  const fl = e.target.files[0]; if (!fl) return; const im = new Image();
+  im.onload = () => { const k = Math.min(1, 900 / Math.max(im.width, im.height)), cv = document.createElement("canvas");
+    cv.width = im.width * k; cv.height = im.height * k; cv.getContext("2d").drawImage(im, 0, 0, cv.width, cv.height); setWp(cv.toDataURL("image/jpeg", .6)); toast("🖼️ Wallpaper set"); };
+  im.src = URL.createObjectURL(fl); e.target.value = "";
+};
 function drawMsgs() {
   const c = S.contacts.find(x => x.id === cur), box = $("msgs"); if (!box) return;
   box.innerHTML = c.msgs.map((m, i) => m.sys ? `<div class="sys">${esc(m.t)}</div>` :
@@ -246,13 +339,17 @@ function wire() {
 function send(img) {
   const v = img ? "" : $("inp").value.trim(); if (!v && !img) return;
   const c = S.contacts.find(x => x.id === cur), id = cur;
+  if (c.blocked) return toast("🚫 Unblock to send messages");
   const mine = { f: "me", t: v, img, ts: now() }; c.msgs.push(mine); if (!img) $("inp").value = ""; $("emop").classList.remove("on");
   save(); drawMsgs(); renderList(); $("st").textContent = "typing…";
   const n = c.group && Math.random() > .5 ? 2 : 1;
   for (let k = 0; k < n; k++) setTimeout(() => {
     const w = c.group ? S.contacts.find(x => x.id === c.members[Math.random() * c.members.length | 0]) : c;
+    if (c.blocked || w.blocked) { if (cur === id && $("st")) $("st").textContent = c.st; return; }
     const t = img ? "Nice pic! 😍" : w.ai ? ai(v) : (c.msgs.length < 3 ? GREET : REPLIES)[Math.random() * (c.msgs.length < 3 ? 3 : REPLIES.length) | 0];
-    if (Math.random() < .35) mine.r = ["❤️","😂","👍"][Math.random() * 3 | 0]; c.msgs.push({ f: "them", t, ts: now(), who: w.name }); if (cur !== id) c.unread++; save();
+    if (Math.random() < .35) mine.r = ["❤️","😂","👍"][Math.random() * 3 | 0]; c.msgs.push({ f: "them", t, ts: now(), who: w.name });
+    if (cur !== id) { c.unread++; if (!c.mute) toast(c.pin ? "🔒 New message" : c.name + ": " + t); }
+    save();
     if (cur === id) { $("st").textContent = c.st; drawMsgs(); } renderList();
   }, 900 + k * 1000 + Math.random() * 1200);
 }
@@ -263,17 +360,18 @@ $("pick").onclick = e => { if (e.target.dataset.e) { sel = e.target.dataset.e; [
 $("save").onclick = () => {
   const n = $("cn").value.trim(); if (!n) return;
   S.contacts.unshift({ id: "c" + Date.now(), name: n, em: sel, st: $("cs").value.trim() || "Hey there! I'm using Petalk", phone: $("cp").value.trim(), mood: "😊 Happy", msgs: [], unread: 0 });
-  save(); $("cn").value = $("cs").value = $("cp").value = ""; $("modal").classList.remove("on"); renderList(); open(S.contacts[0].id);
+  save(); $("cn").value = $("cs").value = $("cp").value = ""; $("modal").classList.remove("on"); showArch = false; renderList(); open(S.contacts[0].id);
 };
 $("q").oninput = renderList;
-$("out").onclick = () => signOut(auth);
+$("out").onclick = () => { ul = null; signOut(auth); };
 
 /* ---------- REACTIONS / STATUS / CALLS ---------- */
-let tab = "chats", stT, cT, cS = 0, cC, sb = 0, rxT = 0;
+let tab = "chats", stT, cT, cS = 0, cC, sb = 0, rxT = 0, amCb;
 const fmt = s => String(s / 60 | 0).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
 const BGS = [["#ffb88c","#de6262"],["#a18cd1","#fbc2eb"],["#84fab0","#8fd3f4"],["#fccb90","#d57eeb"],["#f6d365","#fda085"]];
 const STORIES = { d1: [{ t: "Best café ever ☕🧋", bg: BGS[0] }], d2: [{ t: "New week, new me ✨", bg: BGS[1] }, { t: "Study mode 📚", bg: BGS[2] }], d3: [{ t: "Leg day 🔥💪", bg: BGS[3] }] };
 const DEMO_CALLS = [{ name: "Mimi", em: "🐱", video: 0, ts: "Yesterday", dur: 312, missed: 0, in: 1 }, { name: "Hamza", em: "🐻", video: 1, ts: "Mon", dur: 0, missed: 1, in: 1 }];
+const CM = ["So cute! 😍","Love this 💖","Haha 😂","Where is this?","Yesss 🔥","Aww 🥹","Same!! 🙈","Wow ✨"];
 function bindMsgs() {
   const box = $("msgs"); let t; const pick = b => showRx(b);
   box.ondblclick = e => { const b = e.target.closest(".b"); if (b) pick(b); };
@@ -291,33 +389,73 @@ function showRx(b) {
 document.addEventListener("click", e => { if (!e.target.closest("#rx") && Date.now() - rxT > 400) $("rx").style.display = "none"; });
 $("tabs").onclick = e => { const b = e.target.closest("button"); if (!b) return; tab = b.dataset.t; [...$("tabs").children].forEach(x => x.classList.toggle("on", x === b)); renderList(); };
 function renderStatus() {
-  const rows = S.contacts.filter(c => STORIES[c.id]).map(c => `<div class="ct" data-s="${c.id}"><div class="av ring ${S.seen[c.id] ? "seen" : ""}">${c.em}</div><div class="m"><div class="n">${esc(c.name)}</div><div class="s">${STORIES[c.id].length} update${STORIES[c.id].length > 1 ? "s" : ""} · Today</div></div></div>`).join("");
+  const rows = S.contacts.filter(c => STORIES[c.id] && !c.blocked).map(c => `<div class="ct" data-s="${c.id}"><div class="av ring ${S.seen[c.id] ? "seen" : ""}">${c.em}</div><div class="m"><div class="n">${esc(c.name)}</div><div class="s">${STORIES[c.id].length} update${STORIES[c.id].length > 1 ? "s" : ""} · Today</div></div></div>`).join("");
   $("list").innerHTML = `<div class="ct" id="mys"><div class="av ${S.my.length ? "ring" : ""}">${S.my.length ? pAv(S.profile) : "➕"}</div><div class="m"><div class="n">My status</div><div class="s">${S.my.length ? S.my.length + " update(s) · tap to view" : "Tap to add a status update"}</div></div>${S.my.length ? '<button class="ib" id="adds">➕</button>' : ""}</div><p class="sec">Recent updates</p>${rows}`;
-  $("mys").onclick = e => { if (e.target.closest("#adds") || !S.my.length) openStm(); else viewStory(S.my, S.profile.name, pAv(S.profile)); };
+  $("mys").onclick = e => { if (e.target.closest("#adds") || !S.my.length) openStm(); else viewStory(S.my, S.profile.name, pAv(S.profile), "my", 1); };
   document.querySelectorAll("[data-s]").forEach(e => e.onclick = () => { const c = S.contacts.find(x => x.id === e.dataset.s); viewStory(STORIES[c.id], c.name, c.em, c.id); });
 }
-function viewStory(it, name, em, key) {
+/* status activity: likes, comments, who commented / who didn't */
+function ensureAct(k, owner) {
+  const a = S.act[k] ||= { likes: {}, cm: [], views: {} };
+  if (!a.gen) {
+    a.gen = 1;
+    S.contacts.filter(c => !c.ai && !c.group && !c.blocked && c.id !== owner).forEach(c => {
+      if (Math.random() < .8) { a.views[c.name] = 1; if (Math.random() < .55) a.likes[c.name] = 1; if (Math.random() < .35) a.cm.push({ who: c.name, t: CM[Math.random() * CM.length | 0] }); }
+    });
+    save();
+  }
+  return a;
+}
+function openAct(k, owner, cb) {
+  amCb = cb; const a = ensureAct(k, owner), L = Object.keys(a.likes), V = Object.keys(a.views), done = new Set(a.cm.map(x => x.who));
+  const names = S.contacts.filter(c => !c.ai && !c.group && !c.blocked && c.id !== owner).map(c => c.name).concat(owner ? ["You"] : []).filter(n => !done.has(n));
+  const nm = x => x.length ? x.map(esc).join(", ") : "—";
+  $("amb").innerHTML = `<h1>Status activity 🌈</h1><div class="irow"><small>❤️ Likes (${L.length})</small>${nm(L)}</div><div class="irow"><small>💬 Comments (${a.cm.length})</small>${a.cm.length ? a.cm.map(x => `<div><b>${esc(x.who)}</b>: ${esc(x.t)}</div>`).join("") : "No comments yet"}</div><div class="irow"><small>🙈 Not commented (${names.length})</small>${nm(names)}</div><div class="irow"><small>👁 Viewed by (${V.length})</small>${nm(V)}</div>`;
+  $("am").classList.add("on");
+}
+$("amx").onclick = () => { $("am").classList.remove("on"); const f = amCb; amCb = null; f && f(); };
+function viewStory(it, name, em, key, own) {
   let i = 0; const o = $("story"); o.style.display = "flex";
-  const close = () => { clearTimeout(stT); o.style.display = "none"; if (key) { S.seen[key] = 1; save(); renderList(); } };
+  const close = () => { clearTimeout(stT); o.style.display = "none"; $("stbot").innerHTML = ""; if (!own && key) { S.seen[key] = 1; save(); renderList(); } };
+  const sk = () => own ? "m" + (it[i].id || i) : key + "_" + i;
+  const next = () => { i++; show(); };
   const show = () => {
-    clearTimeout(stT); if (i >= it.length) return close(); if (i < 0) i = 0; const s = it[i];
+    clearTimeout(stT); if (i >= it.length) return close(); if (i < 0) i = 0; const s = it[i], a = ensureAct(sk(), own ? null : key);
     o.style.background = `linear-gradient(135deg,${s.bg[0]},${s.bg[1]})`;
     $("stbars").innerHTML = it.map((_, j) => `<span><b style="${j < i ? "width:100%" : j === i ? "animation:fill 4s linear forwards" : ""}"></b></span>`).join("");
     $("sthead").innerHTML = `<div class="av">${em}</div><b>${esc(name)}</b>`; $("sttext").textContent = s.t;
-    stT = setTimeout(() => { i++; show(); }, 4000);
+    const nl = () => Object.keys(a.likes).length;
+    $("stbot").innerHTML = own ? `<button id="stinfo" style="flex:1">👁 ${Object.keys(a.views).length} · ❤️ ${nl()} · 💬 ${a.cm.length}</button>`
+      : `<input id="stc2" placeholder="Reply to ${esc(name)}…" autocomplete="off"><button id="stsend">➤</button><button id="stlike">${a.likes.You ? "❤️" : "🤍"} ${nl()}</button><button id="stinfo">💬 ${a.cm.length}</button>`;
+    $("stinfo").onclick = () => { clearTimeout(stT); openAct(sk(), own ? null : key, show); };
+    if (!own) {
+      const inp = $("stc2"), bar = () => $("stbars").children[i]?.firstChild;
+      inp.onfocus = () => { clearTimeout(stT); const b = bar(); if (b) b.style.animationPlayState = "paused"; };
+      inp.onblur = () => { clearTimeout(stT); const b = bar(); if (b) b.style.animationPlayState = "running"; stT = setTimeout(next, 4000); };
+      const sendC = () => { const v = inp.value.trim(); if (!v) return; a.cm.push({ who: "You", t: v });
+        S.contacts.find(x => x.id === key).msgs.push({ f: "me", t: "💬 Status reply: " + v, ts: now() }); save(); toast("💬 Comment sent"); show(); };
+      inp.onkeydown = e => e.key === "Enter" && sendC(); $("stsend").onclick = sendC;
+      $("stlike").onclick = () => { if (a.likes.You) delete a.likes.You; else { a.likes.You = 1; toast("❤️ You liked this status"); } save(); $("stlike").textContent = (a.likes.You ? "❤️" : "🤍") + " " + nl(); };
+    }
+    stT = setTimeout(next, 4000);
   };
-  $("stnext").onclick = () => { i++; show(); }; $("stprev").onclick = () => { i--; show(); }; $("stx").onclick = close; show();
+  $("stnext").onclick = next; $("stprev").onclick = () => { i--; show(); }; $("stx").onclick = close; show();
 }
 function openStm() { $("stm").classList.add("on"); $("stt").value = ""; drawStc(); }
 const drawStc = () => $("stc").innerHTML = BGS.map((b, i) => `<span class="sw ${sb === i ? "sel" : ""}" data-i="${i}" style="background:linear-gradient(135deg,${b[0]},${b[1]})"></span>`).join("");
 $("stc").onclick = e => { if (e.target.dataset.i) { sb = +e.target.dataset.i; drawStc(); } };
 $("stq").onclick = () => $("stm").classList.remove("on");
-$("stp").onclick = () => { const t = $("stt").value.trim(); if (!t) return; S.my.push({ t, bg: BGS[sb], ts: now() }); save(); $("stm").classList.remove("on"); renderList(); };
+$("stp").onclick = () => {
+  const t = $("stt").value.trim(); if (!t) return; const id = Date.now();
+  S.my.push({ id, t, bg: BGS[sb], ts: now() }); save(); $("stm").classList.remove("on"); renderList();
+  setTimeout(() => { const a = ensureAct("m" + id, null), l = Object.keys(a.likes)[0]; if (l) toast("❤️ " + l + " liked your status"); }, 3500);
+};
 function renderCalls() {
   $("list").innerHTML = S.calls.map((c, i) => `<div class="ct" data-k="${i}"><div class="av">${c.em}</div><div class="m"><div class="n" style="${c.missed ? "color:#e0436b" : ""}">${esc(c.name)}</div><div class="s">${c.missed ? "↙ Missed" : c.in ? "↙ Incoming" : "↗ Outgoing"} · ${c.ts}${c.dur ? " · " + fmt(c.dur) : ""}</div></div><span style="font-size:20px">${c.video ? "🎥" : "📞"}</span></div>`).join("") || '<div class="empty" style="padding:30px">No calls yet 📞</div>';
   document.querySelectorAll("[data-k]").forEach(e => e.onclick = () => { const k = S.calls[e.dataset.k], c = S.contacts.find(x => x.name === k.name); if (c) startCall(c, k.video); });
 }
 function startCall(c, v) {
+  if (c.blocked) return toast("🚫 Unblock to call");
   cC = c; cS = 0; const o = $("call"); o.className = v ? "vid" : ""; o.style.display = "flex";
   $("cav").innerHTML = c.em; $("cname").textContent = c.name; $("cst").textContent = v ? "Video calling…" : "Calling…";
   $("cme").style.display = v ? "block" : "none"; $("cme").innerHTML = pAv(S.profile);
@@ -414,19 +552,19 @@ $("gsave").onclick = () => {
   if (!n) return alert("Give your group a name 🎀"); if (ids.length < 2) return alert("Pick at least 2 members 👥");
   const names = ids.map(i => S.contacts.find(c => c.id === i).name);
   S.contacts.unshift({ id: "g" + Date.now(), name: n, em: gsel, group: true, members: ids, st: "You, " + names.join(", "), unread: 0, msgs: [{ sys: 1, t: "You created group “" + n + "” 🎉", ts: now() }] });
-  save(); $("gn").value = ""; $("gm").classList.remove("on"); renderList(); open(S.contacts[0].id);
+  save(); $("gn").value = ""; $("gm").classList.remove("on"); showArch = false; renderList(); open(S.contacts[0].id);
 };
 
 onAuthStateChanged(auth, u => {
   $("authView").style.display = u ? "none" : "grid";
   $("app").style.display = u ? "flex" : "none";
-  if (!u) { cur = null; $("app").classList.remove("chat"); return; }
+  if (!u) { cur = null; ul = null; $("app").classList.remove("chat"); return; }
   uid = u.uid;
   S = JSON.parse(localStorage.getItem("cc_" + uid) || "null") || seed();
   S.profile ||= { name: u.displayName || "Cutie", bio: "Hey there! I'm using Petalk 🌸", mood: "😊 Happy", phone: "", ls: true, rr: true, user: "", bday: "", photo: "", acc: 0, dark: false, av: { skin: 1, style: 0, hair: 0, eyes: 1, mouth: 0, acc: 2, bg: 0, shirt: 0 } };
-  S.calls ||= DEMO_CALLS; S.my ||= []; S.seen ||= {}; tab = "chats";
+  S.calls ||= DEMO_CALLS; S.my ||= []; S.seen ||= {}; S.act ||= {}; S.wpAll ||= ""; tab = "chats"; showArch = false; ul = null;
   refreshMe(); renderList(); if (!S.profile.done) openProfile();
-  $("main").innerHTML = '<div class="empty">🌸<br>Pick a chat to start talking!</div>';
+  $("main").innerHTML = EMPTY;
 });
 </script>
 </body></html>

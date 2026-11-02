@@ -90,6 +90,8 @@ body.dark .cmenu,body.dark .blkbar{background:#3a2d47;color:#f3e8ff}
 #stbot{position:absolute;left:0;right:0;bottom:0;padding:12px 14px max(14px,env(safe-area-inset-bottom));display:flex;gap:8px;align-items:center;z-index:3}
 #stbot input{flex:1;padding:12px 16px;border-radius:22px;border:2px solid #fff8;background:#0003;color:#fff}#stbot input::placeholder{color:#fffb}
 #stbot button{min-width:44px;height:44px;border-radius:22px;background:#fff4;color:#fff;font-size:16px;padding:0 12px}
+input,.search{font-size:16px}
+.send,.ib{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 </style></head>
 <body>
 <!-- SIGN IN / SIGN UP -->
@@ -246,9 +248,9 @@ function open(id) {
   if (c.pin && ul !== id) return askPin("🔒 Private chat — enter PIN", () => { ul = id; open(id); }, v => h(v) === c.pin);
   ul = c.pin ? id : null; cur = id; c.unread = 0; save();
   $("app").classList.add("chat");
-  $("main").innerHTML = `<div class="hd" id="hd" style="cursor:pointer"><button class="ib back" id="bk">←</button><div class="av">${c.em}</div><div style="flex:1;min-width:0"><div class="t">${esc(c.name)}</div><div class="st" id="st">${esc(c.st)}</div></div><button class="ib" id="vc">🎥</button><button class="ib" id="ac">📞</button><button class="ib" id="mnb">⋮</button></div><div class="cmenu" id="cmenu"></div><div class="msgs" id="msgs"></div><div class="emopanel" id="emop"></div><div class="bar"><button class="ib" id="emo" type="button">😊</button><label class="ib" style="display:grid;place-items:center;cursor:pointer">📎<input type="file" id="img" accept="image/*" hidden></label><input id="inp" placeholder="Type a message 💬" autocomplete="off"><button class="send" id="snd">➤</button></div><div class="blkbar" id="blkbar">🚫 You blocked ${esc(c.name)} <button class="link" id="unb" style="margin:0 0 0 8px">Unblock</button></div>`;
+  $("main").innerHTML = `<div class="hd" id="hd" style="cursor:pointer"><button class="ib back" id="bk">←</button><div class="av">${c.em}</div><div style="flex:1;min-width:0"><div class="t">${esc(c.name)}</div><div class="st" id="st">${esc(c.st)}</div></div><button class="ib" id="vc">🎥</button><button class="ib" id="ac">📞</button><button class="ib" id="mnb">⋮</button></div><div class="cmenu" id="cmenu"></div><div class="msgs" id="msgs"></div><div class="emopanel" id="emop"></div><div class="bar"><button class="ib" id="emo" type="button">😊</button><label class="ib" style="display:grid;place-items:center;cursor:pointer">📎<input type="file" id="img" accept="image/*" hidden></label><form id="mf" style="flex:1;display:flex;min-width:0"><input id="inp" placeholder="Type a message 💬" autocomplete="off" enterkeyhint="send" style="flex:1;min-width:0"></form><button class="send" id="snd">➤</button></div><div class="blkbar" id="blkbar">🚫 You blocked ${esc(c.name)} <button class="link" id="unb" style="margin:0 0 0 8px">Unblock</button></div>`;
   $("bk").onclick = () => { cur = null; ul = null; $("app").classList.remove("chat"); renderList(); };
-  $("hd").onclick = e => { if (!e.target.closest("#bk,#vc,#ac,#mnb")) showInfo(c); }; $("vc").onclick = () => startCall(c, 1); $("ac").onclick = () => startCall(c, 0); $("snd").onclick = () => send(); $("inp").onkeydown = e => e.key === "Enter" && send();
+  $("hd").onclick = e => { if (!e.target.closest("#bk,#vc,#ac,#mnb")) showInfo(c); }; $("vc").onclick = () => startCall(c, 1); $("ac").onclick = () => startCall(c, 0); $("snd").onmousedown = e => e.preventDefault(); $("snd").onclick = () => { send(); $("inp").focus(); }; $("mf").onsubmit = e => { e.preventDefault(); send(); };
   $("mnb").onclick = () => { const m = $("cmenu"); m.innerHTML = menu(c).map(([a, t]) => `<div data-a="${a}">${t}</div>`).join(""); m.classList.toggle("on"); };
   $("cmenu").onclick = e => { const a = e.target.dataset.a; if (a) { $("cmenu").classList.remove("on"); menuAct(c, a); } };
   $("unb").onclick = () => menuAct(c, "blk");
